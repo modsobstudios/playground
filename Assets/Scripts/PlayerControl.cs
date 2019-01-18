@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class PlayerControl : MonoBehaviour 
 {
-	public float speed = 10.0f;
+	private float speed = 10.0f;
+    private float lookSpeed = 5.0f;
 	private Rigidbody rb;
-	private float xMov, zMov;
+    private float xRot, zzRot;
 
 	// Use this for initialization
 	void Start () 
@@ -17,22 +18,32 @@ public class PlayerControl : MonoBehaviour
 	// Update is called once per frame
 	void FixedUpdate () 
 	{
-		xMov = Input.GetAxis ("Horizontal");
-		zMov = Input.GetAxis ("Vertical");
 		doMove ();
 		doRotate ();
 	}
 
 	private void doMove()
 	{
-		if (xMov == 0.0f && zMov == 0.0f)
-			rb.velocity = new Vector3 (rb.velocity.x * 0.5f, rb.velocity.y, rb.velocity.z * 0.5f);
-		rb.AddForce (new Vector3 (xMov, 0.0f, zMov) * speed);
+        if (Input.GetKey(KeyCode.A))
+            rb.AddForce(-transform.right * speed);
+        if (Input.GetKey(KeyCode.D))
+            rb.AddForce(transform.right * speed);
+        if (Input.GetKey(KeyCode.W))
+            rb.AddForce(transform.forward * speed);
+        if (Input.GetKey(KeyCode.S))
+            rb.AddForce(-transform.forward * speed);
+
+        if(!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S))
+            rb.velocity = new Vector3(rb.velocity.x * 0.5f, rb.velocity.y, rb.velocity.z * 0.5f);
 	}
 
 	private void doRotate()
 	{
-		
-	}
+        xRot = Input.GetAxis("Mouse X");
+        zzRot = Input.GetAxis("Mouse Y");
+        // This is currently very bad.
+        transform.Rotate(new Vector3(-zzRot, 0, 0) * lookSpeed);
+        transform.Rotate(new Vector3(0, xRot, 0) * lookSpeed);
+    }
 
 }
