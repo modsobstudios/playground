@@ -81,7 +81,10 @@ public class PlayerControl : MonoBehaviour
             rb.velocity = new Vector3(transform.forward.x * speed, rb.velocity.y, transform.forward.z * speed);
         if (Input.GetKey(KeyCode.S))
             rb.velocity = new Vector3(-transform.forward.x * speed, rb.velocity.y, -transform.forward.z * speed);
-
+        //I wonder if this works
+        if (Input.GetKeyDown(KeyCode.Space))
+            rb.velocity = new Vector3(rb.velocity.x, transform.up.y *speed -1 , rb.velocity.z );
+        //I tried to make it do the thing...
         if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S))
             rb.velocity = new Vector3(rb.velocity.x * 0.5f, rb.velocity.y, rb.velocity.z * 0.5f);
     }
