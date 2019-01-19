@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerControl : MonoBehaviour 
+public class PlayerControl : MonoBehaviour
 {
-	private float speed = 10.0f;
-	private Rigidbody rb;
+    private float speed = 10.0f;
+    private Rigidbody rb;
+
+    public GameObject held;
 
     // blatantlyStolenMouseLookCode
     public enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 }
@@ -35,25 +37,34 @@ public class PlayerControl : MonoBehaviour
     Quaternion originalRotation;
 
     // Use this for initialization
-    void Start () 
-	{
-		rb = GetComponent<Rigidbody> ();
+    void Start()
+    {
+        rb = GetComponent<Rigidbody>();
 
         // blatantlyStolenMouseLookCode
         if (rb)
             rb.freezeRotation = true;
         originalRotation = transform.localRotation;
+        Cursor.lockState = CursorLockMode.Locked;
+        
     }
-	
-	void FixedUpdate () 
-	{
-		doMove ();
+
+    void FixedUpdate()
+    {
+        doMove();
         blatantlyStolenMouseLookCode();
-	}
+        if (Input.GetKeyDown(KeyCode.E))
+            tryPickup();
+        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+        Debug.DrawRay(ray.origin, Camera.main.transform.forward * 100, Color.magenta);
+        RaycastHit h;
+        Physics.Raycast(ray, out h);
+        Debug.Log(h.transform.name);
+    }
 
     // Legit probably the best FPS movement code I've done. So simple. So clean. 
-	private void doMove()
-	{
+    private void doMove()
+    {
         if (Input.GetKey(KeyCode.A))
             rb.velocity = new Vector3(-transform.right.x * speed, rb.velocity.y, -transform.right.z * speed);
         if (Input.GetKey(KeyCode.D))
@@ -173,5 +184,21 @@ public class PlayerControl : MonoBehaviour
             }
         }
         return Mathf.Clamp(angle, min, max);
+    }
+
+    public void tryPickup()
+    {
+        RaycastHit hit;
+        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+        Debug.DrawRay(ray.origin, Camera.main.transform.forward * 1000, Color.magenta);
+        if (Physics.Raycast(ray, out hit))
+        {
+            if (hit.transform.tag == "Pickup")
+            {
+                hit.transform.position = held.transform.position;
+                held = hit.transform.gameObject;
+                held.transform.parent = transform;
+            }
+        }
     }
 }
