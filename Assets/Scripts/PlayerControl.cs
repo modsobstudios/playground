@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerControl : MonoBehaviour
 {
     private float speed = 10.0f;
+    private float jumpForce = 6.0f;
     private Rigidbody rb;
 
     public GameObject held;
@@ -63,11 +64,6 @@ public class PlayerControl : MonoBehaviour
             interact();
         if (Input.GetKeyDown(KeyCode.F))
             tryThrow();
-        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-        Debug.DrawRay(ray.origin, Camera.main.transform.forward * 100, Color.magenta);
-        RaycastHit h;
-        Physics.Raycast(ray, out h);
-        Debug.Log(h.transform.name);
     }
 
     // Legit probably the best FPS movement code I've done. So simple. So clean. 
@@ -83,7 +79,7 @@ public class PlayerControl : MonoBehaviour
             rb.velocity = new Vector3(-transform.forward.x * speed, rb.velocity.y, -transform.forward.z * speed);
         //I wonder if this works
         if (Input.GetKeyDown(KeyCode.Space))
-            rb.velocity = new Vector3(rb.velocity.x, transform.up.y *speed -1 , rb.velocity.z );
+            rb.velocity = new Vector3(rb.velocity.x, transform.up.y * jumpForce, rb.velocity.z );
         //I tried to make it do the thing...
         if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S))
             rb.velocity = new Vector3(rb.velocity.x * 0.5f, rb.velocity.y, rb.velocity.z * 0.5f);
