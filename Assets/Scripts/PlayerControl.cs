@@ -8,6 +8,9 @@ public class PlayerControl : MonoBehaviour
     private Rigidbody rb;
 
     public GameObject held;
+    private GameObject emptyHeld;
+    private Vector3 heldPos;
+    private bool hasObject = false;
 
     // blatantlyStolenMouseLookCode
     public enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 }
@@ -46,15 +49,20 @@ public class PlayerControl : MonoBehaviour
             rb.freezeRotation = true;
         originalRotation = transform.localRotation;
         Cursor.lockState = CursorLockMode.Locked;
-        
+        emptyHeld = held;
+        heldPos = held.transform.position;
     }
 
     void FixedUpdate()
     {
         doMove();
         blatantlyStolenMouseLookCode();
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E) && !hasObject)
             tryPickup();
+        if (Input.GetKeyDown(KeyCode.E) && hasObject)
+            interact();
+        if (Input.GetKeyDown(KeyCode.F))
+            tryThrow();
         Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
         Debug.DrawRay(ray.origin, Camera.main.transform.forward * 100, Color.magenta);
         RaycastHit h;
@@ -198,6 +206,29 @@ public class PlayerControl : MonoBehaviour
                 hit.transform.position = held.transform.position;
                 held = hit.transform.gameObject;
                 held.transform.parent = transform;
+                held.GetComponent<Rigidbody>().isKinematic = true;
+            }
+        }
+    }
+
+    public void tryThrow()
+    {
+        GameObject g = held;
+        held = emptyHeld;
+        g.transform.parent = null;
+        g.GetComponent<Rigidbody>().isKinematic = false;
+        g.GetComponent<Rigidbody>().AddForce(transform.forward * 1000);
+    }
+
+    public void interact()
+    {
+        RaycastHit hit;
+        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+        Debug.DrawRay(ray.origin, Camera.main.transform.forward * 1000, Color.magenta);
+        if (Physics.Raycast(ray, out hit))
+        {
+            if (hit.transform.tag == "Thing")
+            {
             }
         }
     }
