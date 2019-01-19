@@ -13,32 +13,30 @@ public class PlayerControl : MonoBehaviour
     private Vector3 heldPos;
     private bool hasObject = false;
 
-    // blatantlyStolenMouseLookCode
+    public Thingmaster masterThing;
+
+
+#region blatantlyStolenMouseLookCode
+
     public enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 }
     public RotationAxes axes = RotationAxes.MouseXAndY;
     public float sensitivityX = 5F;
     public float sensitivityY = 5F;
-
     public float minimumX = -360F;
     public float maximumX = 360F;
-
     public float minimumY = -60F;
     public float maximumY = 60F;
-
     float rotationX = 0F;
     float rotationY = 0F;
-
     private List<float> rotArrayX = new List<float>();
     float rotAverageX = 0F;
-
     private List<float> rotArrayY = new List<float>();
     float rotAverageY = 0F;
-
     public float tickCount = 20;
-
     public float maximumVelocity = 10;
-
     Quaternion originalRotation;
+
+#endregion
 
     // Use this for initialization
     void Start()
@@ -206,6 +204,7 @@ public class PlayerControl : MonoBehaviour
                 held = hit.transform.gameObject;
                 held.transform.parent = transform;
                 held.GetComponent<Rigidbody>().isKinematic = true;
+                hasObject = true;
             }
         }
     }
@@ -217,6 +216,7 @@ public class PlayerControl : MonoBehaviour
         g.transform.parent = null;
         g.GetComponent<Rigidbody>().isKinematic = false;
         g.GetComponent<Rigidbody>().AddForce(transform.forward * 1000);
+        hasObject = false;
     }
 
     public void interact()
@@ -226,8 +226,11 @@ public class PlayerControl : MonoBehaviour
         Debug.DrawRay(ray.origin, Camera.main.transform.forward * 1000, Color.magenta);
         if (Physics.Raycast(ray, out hit))
         {
+            Debug.Log(hit.transform.name);
             if (hit.transform.tag == "Thing")
             {
+                Debug.Log("Attempting to use " + held.name + " on " + hit.transform.gameObject.name + ".");
+                masterThing.parseThings(hit.transform.gameObject.name, held.name);
             }
         }
     }
