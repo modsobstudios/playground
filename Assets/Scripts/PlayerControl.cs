@@ -5,9 +5,13 @@ using UnityEngine;
 public class PlayerControl : MonoBehaviour
 {
     private float speed = 10.0f;
+    private float jumpForce = 6.0f;
     private Rigidbody rb;
 
     public GameObject held;
+    private GameObject emptyHeld;
+    private Vector3 heldPos;
+    private bool hasObject = false;
 
     // blatantlyStolenMouseLookCode
     public enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 }
@@ -46,20 +50,20 @@ public class PlayerControl : MonoBehaviour
             rb.freezeRotation = true;
         originalRotation = transform.localRotation;
         Cursor.lockState = CursorLockMode.Locked;
-        
+        emptyHeld = held;
+        heldPos = held.transform.position;
     }
 
     void FixedUpdate()
     {
         doMove();
         blatantlyStolenMouseLookCode();
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E) && !hasObject)
             tryPickup();
-        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-        Debug.DrawRay(ray.origin, Camera.main.transform.forward * 100, Color.magenta);
-        RaycastHit h;
-        Physics.Raycast(ray, out h);
-        Debug.Log(h.transform.name);
+        if (Input.GetKeyDown(KeyCode.E) && hasObject)
+            interact();
+        if (Input.GetKeyDown(KeyCode.F))
+            tryThrow();
     }
 
     // Legit probably the best FPS movement code I've done. So simple. So clean. 
@@ -73,7 +77,10 @@ public class PlayerControl : MonoBehaviour
             rb.velocity = new Vector3(transform.forward.x * speed, rb.velocity.y, transform.forward.z * speed);
         if (Input.GetKey(KeyCode.S))
             rb.velocity = new Vector3(-transform.forward.x * speed, rb.velocity.y, -transform.forward.z * speed);
-
+        //I wonder if this works
+        if (Input.GetKeyDown(KeyCode.Space))
+            rb.velocity = new Vector3(rb.velocity.x, transform.up.y * jumpForce, rb.velocity.z );
+        //I tried to make it do the thing...
         if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S))
             rb.velocity = new Vector3(rb.velocity.x * 0.5f, rb.velocity.y, rb.velocity.z * 0.5f);
     }
@@ -198,6 +205,29 @@ public class PlayerControl : MonoBehaviour
                 hit.transform.position = held.transform.position;
                 held = hit.transform.gameObject;
                 held.transform.parent = transform;
+                held.GetComponent<Rigidbody>().isKinematic = true;
+            }
+        }
+    }
+
+    public void tryThrow()
+    {
+        GameObject g = held;
+        held = emptyHeld;
+        g.transform.parent = null;
+        g.GetComponent<Rigidbody>().isKinematic = false;
+        g.GetComponent<Rigidbody>().AddForce(transform.forward * 1000);
+    }
+
+    public void interact()
+    {
+        RaycastHit hit;
+        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+        Debug.DrawRay(ray.origin, Camera.main.transform.forward * 1000, Color.magenta);
+        if (Physics.Raycast(ray, out hit))
+        {
+            if (hit.transform.tag == "Thing")
+            {
             }
         }
     }
