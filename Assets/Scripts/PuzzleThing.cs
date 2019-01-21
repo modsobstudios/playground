@@ -27,6 +27,7 @@ public class PuzzleThing : Thing
             piecePlace = _obj;
             _obj.transform.parent = transform;
             _obj.GetComponent<Rigidbody>().isKinematic = true;
+            _obj.tag = "Untagged";
             return true;
         }
         else
