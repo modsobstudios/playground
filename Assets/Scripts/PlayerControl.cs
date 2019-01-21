@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class PlayerControl : MonoBehaviour
 {
-    private float speed = 10.0f;
-    private float jumpForce = 6.0f;
     private Rigidbody rb;
-
     public GameObject held;
     private GameObject emptyHeld;
     private Vector3 heldPos;
+
+    private float jumpForce = 6.0f;
+    private float speed = 10.0f;
     private bool hasObject = false;
 
     public Thingmaster masterThing;
@@ -42,14 +42,14 @@ public class PlayerControl : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        emptyHeld = held;
+        heldPos = held.transform.position;
 
         // blatantlyStolenMouseLookCode
         if (rb)
             rb.freezeRotation = true;
         originalRotation = transform.localRotation;
         Cursor.lockState = CursorLockMode.Locked;
-        emptyHeld = held;
-        heldPos = held.transform.position;
     }
 
     void FixedUpdate()
@@ -230,7 +230,11 @@ public class PlayerControl : MonoBehaviour
             if (hit.transform.tag == "Thing")
             {
                 Debug.Log("Attempting to use " + held.name + " on " + hit.transform.gameObject.name + ".");
-                masterThing.parseThings(hit.transform.gameObject.name, held.name);
+                if(masterThing.parseThings(hit.transform.gameObject.name, held))
+                {
+                    hasObject = false;
+                    held = emptyHeld;
+                }
             }
         }
     }

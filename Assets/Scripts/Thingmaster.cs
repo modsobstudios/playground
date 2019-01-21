@@ -7,15 +7,18 @@ public class Thingmaster : MonoBehaviour
 
     // Pass the name of the Thing in _type to select the correct type of Thing from the collection.
     // Inherited function will be called using _name as a parameter.
-    public void parseThings(string _type, string _name)
+    // Returns true if the object will be taken from the player.
+    // Returns false if the object will stay in the player's hand.
+    public bool parseThings(string _type, GameObject _obj)
     {
         if(things.ContainsKey(_type))
         {
-            things[_type].interact(_name);
+            return things[_type].interact(_obj);
         }
         else
         {
             Debug.Log("What are you touching? That's not a Thing!");
+            return false;
         }
     }
 

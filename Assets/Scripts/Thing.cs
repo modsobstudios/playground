@@ -14,8 +14,9 @@ public class Thing : MonoBehaviour {
 		
 	}
 
-    public virtual void interact(string _name)
+    public virtual bool interact(GameObject _obj)
     {
         Debug.Log("You have touched a Master Thing! Stop it!");
+        return false;
     }
 }

@@ -18,15 +18,21 @@ public class PuzzleThing : Thing
 
     }
 
-    public override void interact(string _name)
+    public override bool interact(GameObject _obj)
     {
-        if(_name == keyName)
+        if(_obj.name == keyName)
         {
             Debug.Log("The puzzle piece slips perfectly into place.");
+            _obj.transform.position = piecePlace.transform.position;
+            piecePlace = _obj;
+            _obj.transform.parent = transform;
+            _obj.GetComponent<Rigidbody>().isKinematic = true;
+            return true;
         }
         else
         {
             Debug.Log("That won't fit, you neanderthal!");
+            return false;
         }
     }
 }

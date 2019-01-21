@@ -17,21 +17,29 @@ public class DoorThing : Thing
 
     }
 
-    public override void interact(string _name)
+    public override bool interact(GameObject _obj)
     {
-        if (_name == keyName)
+        if (_obj.name == keyName)
         {
             if (!isOpen)
             {
                 // Open de duur.
                 isOpen = true;
                 Debug.Log("Crrrrrrrrrreeeeeaaaaaak... The door is open.");
+                transform.Rotate(transform.right, 90.0f);
+                return false;
+            }
+            else
+            {
+                Debug.Log("The door is already open, y'goof!");
+                return false;
             }
         }
         else
         {
             // Heckle the fool.
-            Debug.Log("What is this? You think a " + _name + " can defeat me? Pshaw! Begone, tiny dumpling!");
+            Debug.Log("What is this? You think a " + _obj.name + " can defeat me? Pshaw! Begone, tiny dumpling!");
+            return false;
         }
     }
 }
