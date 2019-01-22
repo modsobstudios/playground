@@ -40,7 +40,7 @@ public class Spheroid : MonoBehaviour
             {
                 targets.Add(other.gameObject);
             }
-            Debug.Log("Bound");
+//            Debug.Log("Bound");
         }
     }
     private void OnTriggerExit(Collider other)
